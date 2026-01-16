@@ -1,3 +1,6 @@
+using BeniaLite.Api.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Controllers (MVC)
@@ -6,6 +9,13 @@ builder.Services.AddControllers();
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// DbContext
+builder.Services.AddDbContext<BeniaDbContext>(opt =>
+{
+    var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+    opt.UseNpgsql(cs);
+});
 
 var app = builder.Build();
 
