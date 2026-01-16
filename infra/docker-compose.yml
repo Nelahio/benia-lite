@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: benia
+      POSTGRES_PASSWORD: beniapw
+      POSTGRES_DB: beniadb
+    ports:
+      - "5432:5432"
+    volumes:
+      - benia_pgdata:/var/lib/postgresql/data
+
+volumes:
+  benia_pgdata:
