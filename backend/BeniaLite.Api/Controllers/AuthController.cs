@@ -4,6 +4,9 @@ using BeniaLite.Api.Data;
 using BeniaLite.Api.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace BeniaLite.Api.Controllers;
 
@@ -57,4 +60,19 @@ public sealed class AuthController : ControllerBase
         var token = _jwt.CreateAccessToken(user);
         return Ok(new AuthResponse(token));
     }
+
+    [Authorize]
+    [HttpGet("me")]
+    public ActionResult<object> Me()
+    {
+        var userId = User.FindFirstValue("uid") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var email = User.FindFirstValue(ClaimTypes.Email) ?? User.FindFirstValue("email");
+
+        return Ok(new
+        {
+            userId,
+            email
+        });
+    }
+
 }
