@@ -1,0 +1,6 @@
+@BeniaLite.Api_HostAddress = http://localhost:5051
+
+GET {{BeniaLite.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
