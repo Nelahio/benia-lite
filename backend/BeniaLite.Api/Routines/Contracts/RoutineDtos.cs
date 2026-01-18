@@ -13,3 +13,4 @@ public sealed record AddStepRequest(string Title, string? Notes, int SortOrder, 
 
 public sealed record CompleteRoutineRequest(string? Notes);
 
+public sealed record RoutineTodayDto(Guid Id, string Name, string Category, bool IsCompletedToday, DateTime? CompletedAtUtc, List<RoutineStepDto> Steps);

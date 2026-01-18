@@ -56,6 +56,51 @@ public sealed class RoutinesController : ControllerBase
         return Ok(dto);
     }
 
+    [HttpGet("today")]
+    public async Task<ActionResult<List<RoutineTodayDto>>> GetTodays()
+    {
+        var userId = CurrentUser.GetUserId(User);
+
+        var start = DateTime.UtcNow.Date;
+        var end = start.AddDays(1);
+
+        // 1) routines actives + étapes
+        var routines = await _db.Routines
+            .Where(r => r.UserId == userId && r.IsActive)
+            .Include(r => r.Steps)
+            .OrderBy(r => r.Name)
+            .ToListAsync();
+
+        // 2) complétions du jour
+        var completionsToday = await _db.RoutineCompletions
+            .Where(c => c.UserId == userId && c.CompletedAtUtc >= start && c.CompletedAtUtc < end)
+            .ToListAsync();
+
+        var completionByRoutineId = completionsToday
+            .GroupBy(c => c.RoutineId)
+            .ToDictionary(g => g.Key, g => g.OrderByDescending(x => x.CompletedAtUtc).First());
+
+        // 3) map -> dto
+        var result = routines.Select(r =>
+        {
+            var hasCompletion = completionByRoutineId.TryGetValue(r.Id, out var completion);
+
+            return new RoutineTodayDto(
+                r.Id,
+                r.Name,
+                r.Category,
+                hasCompletion,
+                completion?.CompletedAtUtc,
+                r.Steps
+                    .OrderBy(s => s.SortOrder)
+                    .Select(s => new RoutineStepDto(s.Id, s.Title, s.Notes, s.SortOrder, s.FrequencyType, s.FrequencyValue))
+                    .ToList()
+            );
+        }).ToList();
+
+        return Ok(result);
+    }
+
     [HttpPost]
     public async Task<ActionResult<RoutineDetailDto>> Create(CreateRoutineRequest req)
     {
