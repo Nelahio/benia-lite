@@ -151,13 +151,17 @@ public sealed class RoutinesController : ControllerBase
     {
         var userId = CurrentUser.GetUserId(User);
 
-        var routine = await _db.RoutineCompletions.SingleOrDefaultAsync(r => r.Id == id && r.UserId == userId);
-        if (routine is null) return NotFound();
+        var start = DateTime.UtcNow.Date;
+        var end = start.AddDays(1);
 
-        var completedToday = await _db.RoutineCompletions.SingleOrDefaultAsync(r =>
-            r.Id == id && r.UserId == userId && r.CompletedAtUtc.Date == DateTime.UtcNow.Date);
+        var completedToday = await _db.RoutineCompletions.SingleOrDefaultAsync(c =>
+            c.UserId == userId &&
+            c.RoutineId == id &&
+            c.CompletedAtUtc >= start &&
+            c.CompletedAtUtc < end);
+
         if (completedToday is null)
-            return Conflict("Routine not completed today");
+            return NotFound();
 
         _db.RoutineCompletions.Remove(completedToday);
 
