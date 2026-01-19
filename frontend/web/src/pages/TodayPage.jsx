@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { api, clearToken } from "../api/http";
+import { api } from "../api/http";
 
-export default function TodayPage({ onLogout }) {
+export default function TodayPage() {
   const [me, setMe] = useState(null);
   const [routines, setRoutines] = useState([]);
   const [error, setError] = useState("");
@@ -38,11 +38,6 @@ export default function TodayPage({ onLogout }) {
     }
   }
 
-  function logout() {
-    clearToken();
-    onLogout();
-  }
-
   return (
     <div
       style={{ maxWidth: 900, margin: "40px auto", fontFamily: "system-ui" }}
@@ -55,7 +50,6 @@ export default function TodayPage({ onLogout }) {
         }}
       >
         <h1>Aujourd’hui</h1>
-        <button onClick={logout}>Logout</button>
       </div>
 
       {me ? <div style={{ color: "#666" }}>Connectée : {me.email}</div> : null}
