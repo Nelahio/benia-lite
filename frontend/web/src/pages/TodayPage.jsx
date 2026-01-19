@@ -49,7 +49,7 @@ export default function TodayPage() {
           alignItems: "center",
         }}
       >
-        <h1>Aujourd’hui</h1>
+        <h1>Aujourd'hui</h1>
       </div>
 
       {me ? <div style={{ color: "#666" }}>Connectée : {me.email}</div> : null}
@@ -57,12 +57,9 @@ export default function TodayPage() {
         <div style={{ color: "crimson", marginTop: 10 }}>{String(error)}</div>
       ) : null}
 
-      <div style={{ display: "grid", gap: 10, marginTop: 20 }}>
+      <div style={{ display: "grid", gap: 12, marginTop: 16 }}>
         {routines.map((r) => (
-          <div
-            key={r.id}
-            style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12 }}
-          >
+          <div key={r.id} className="card" style={{ padding: 14 }}>
             <div
               style={{
                 display: "flex",

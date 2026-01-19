@@ -1,55 +1,45 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { clearToken } from "../api/http";
 
-const linkStyle = ({ isActive }) => ({
-  padding: "8px 10px",
-  borderRadius: 8,
-  textDecoration: "none",
-  color: isActive ? "white" : "#222",
-  background: isActive ? "#222" : "transparent",
-});
-
 export default function AppLayout() {
+  const navigate = useNavigate();
+
   function logout() {
     clearToken();
-    window.location.href = "/login";
+    navigate("/login");
   }
 
   return (
-    <div style={{ fontFamily: "system-ui" }}>
-      <header style={{ borderBottom: "1px solid #eee" }}>
-        <div
-          style={{
-            maxWidth: 1000,
-            margin: "0 auto",
-            padding: "14px 12px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <div style={{ fontWeight: 800 }}>Benia Lite</div>
-          <nav style={{ display: "flex", gap: 6, alignItems: "center" }}>
-            <NavLink to="/" style={linkStyle} end>
-              Today
-            </NavLink>
-            <NavLink to="/meal-prep" style={linkStyle}>
-              Meal prep
-            </NavLink>
-            <NavLink to="/symptoms" style={linkStyle}>
-              Symptoms
-            </NavLink>
-            <button onClick={logout} style={{ marginLeft: 10 }}>
+    <div>
+      <header className="header">
+        <div className="container spaceBetween">
+          <div>
+            <div style={{ fontWeight: 900, letterSpacing: 0.2 }}>
+              Benia Lite
+            </div>
+            <div className="muted" style={{ fontSize: 13 }}>
+              Routines • Symptoms • Meal prep
+            </div>
+          </div>
+
+          <div className="row">
+            <nav className="nav row">
+              <NavLink to="/" end>
+                Today
+              </NavLink>
+              <NavLink to="/meal-prep">Meal prep</NavLink>
+              <NavLink to="/symptoms">Symptoms</NavLink>
+            </nav>
+
+            <button className="btn btnGhost" onClick={logout}>
               Logout
             </button>
-          </nav>
+          </div>
         </div>
       </header>
 
-      <main>
-        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "18px 12px" }}>
-          <Outlet />
-        </div>
+      <main className="container">
+        <Outlet />
       </main>
     </div>
   );
