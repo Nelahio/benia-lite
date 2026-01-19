@@ -62,6 +62,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("dev", policy =>
+        policy.WithOrigins("http://localhost:5173")
+        .AllowAnyHeader()
+        .AllowAnyMethod());
+});
 
 var app = builder.Build();
 
@@ -72,6 +79,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
+
+app.UseCors("dev");
 
 app.UseAuthentication();
 app.UseAuthorization();
