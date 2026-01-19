@@ -16,6 +16,9 @@ public sealed class BeniaDbContext : DbContext
     public DbSet<TriggerTag> TriggerTags => Set<TriggerTag>();
     public DbSet<SymptomLogTrigger> SymptomLogsTrigger => Set<SymptomLogTrigger>();
     public DbSet<Photo> Photos => Set<Photo>();
+    public DbSet<Recipe> Recipes => Set<Recipe>();
+    public DbSet<RecipeIngredient> RecipeIngredients => Set<RecipeIngredient>();
+    public DbSet<MealPlan> MealPlans => Set<MealPlan>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -104,6 +107,30 @@ public sealed class BeniaDbContext : DbContext
                 .HasForeignKey(x => x.SymptomLogId);
 
             b.HasIndex(x => new { x.UserId, x.CreatedAtUtc });
+        });
+
+        modelBuilder.Entity<Recipe>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Name).IsRequired().HasMaxLength(200);
+            b.Property(x => x.Servings).IsRequired();
+            b.HasMany(x => x.Ingredients).WithOne(x => x.Recipe!).HasForeignKey(x => x.RecipeId);
+        });
+
+        modelBuilder.Entity<RecipeIngredient>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Name).IsRequired().HasMaxLength(100);
+            b.Property(x => x.Unit).IsRequired().HasMaxLength(20);
+        });
+
+        modelBuilder.Entity<MealPlan>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.DayUtc).IsRequired();
+            b.Property(x => x.MealType).IsRequired().HasMaxLength(20);
+
+            b.HasIndex(x => new { x.UserId, x.DayUtc, x.MealType }).IsUnique();
         });
     }
 }
