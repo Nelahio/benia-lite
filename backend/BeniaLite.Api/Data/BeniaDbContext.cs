@@ -12,6 +12,10 @@ public sealed class BeniaDbContext : DbContext
     public DbSet<Routine> Routines => Set<Routine>();
     public DbSet<RoutineStep> RoutineSteps => Set<RoutineStep>();
     public DbSet<RoutineCompletion> RoutineCompletions => Set<RoutineCompletion>();
+    public DbSet<SymptomLog> SymptomLogs => Set<SymptomLog>();
+    public DbSet<TriggerTag> TriggerTags => Set<TriggerTag>();
+    public DbSet<SymptomLogTrigger> SymptomLogsTrigger => Set<SymptomLogTrigger>();
+    public DbSet<Photo> Photos => Set<Photo>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -57,6 +61,49 @@ public sealed class BeniaDbContext : DbContext
             b.HasKey(x => x.Id);
             b.Property(x => x.CompletedAtUtc).IsRequired();
             b.HasIndex(x => new { x.UserId, x.RoutineId, x.CompletedAtUtc });
+        });
+
+        modelBuilder.Entity<SymptomLog>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Category).IsRequired().HasMaxLength(50);
+            b.Property(x => x.Severity0to10).IsRequired();
+            b.Property(x => x.LoggedAtUtc).IsRequired();
+
+            b.HasIndex(x => new { x.UserId, x.LoggedAtUtc });
+        });
+
+        modelBuilder.Entity<TriggerTag>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Name).IsRequired().HasMaxLength(50);
+            b.HasIndex(x => new { x.UserId, x.Name }).IsUnique();
+        });
+
+        modelBuilder.Entity<SymptomLogTrigger>(b =>
+        {
+            b.HasKey(x => new { x.SymptomLogId, x.TriggerTagId });
+
+            b.HasOne(x => x.SymptomLog)
+                .WithMany(x => x.Triggers)
+                .HasForeignKey(x => x.SymptomLogId);
+
+            b.HasOne(x => x.TriggerTag)
+                .WithMany(x => x.SymptomLogs)
+                .HasForeignKey(x => x.TriggerTagId);
+        });
+
+        modelBuilder.Entity<Photo>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.Property(x => x.Url).IsRequired().HasMaxLength(1000);
+            b.Property(x => x.CreatedAtUtc).IsRequired();
+
+            b.HasOne(x => x.SymptomLog)
+                .WithMany(x => x.Photos)
+                .HasForeignKey(x => x.SymptomLogId);
+
+            b.HasIndex(x => new { x.UserId, x.CreatedAtUtc });
         });
     }
 }
