@@ -83,4 +83,27 @@ export const api = {
       return request(`/api/symptoms/stats?${qs.toString()}`);
     },
   },
+
+  mealPrep: {
+    recipes: () => request("/api/recipes"),
+    recipe: (id) => request(`/api/recipes/${id}`),
+    createRecipe: (payload) =>
+      request("/api/recipes", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }),
+
+    week: (start) =>
+      request(`/api/mealplans/week?start=${encodeURIComponent(start)}`),
+    addMeal: (payload) =>
+      request("/api/mealplans", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }),
+
+    shoppingList: (start) =>
+      request(
+        `/api/mealplans/shopping-list?start=${encodeURIComponent(start)}`,
+      ),
+  },
 };
